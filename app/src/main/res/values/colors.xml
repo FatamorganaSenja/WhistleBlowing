@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#23b6c9</color>
+    <color name="colorPrimaryDark">#26c6da</color>
+    <color name="colorAccent">#ffffff</color>
+    <color name="colorAccentDark">#f0f0f0</color>
+
+    <!-- dots colors -->
+    <color name="dot_inactive">#1fa3b4</color>
+    <color name="dot_active">#ffffff</color>
+
+</resources>
