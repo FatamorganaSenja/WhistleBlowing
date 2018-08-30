@@ -22,6 +22,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.PermissionRequest;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -46,8 +47,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+import senja.fatamorgana.whistleblowing.Config.CheckPermissionStorage;
 import senja.fatamorgana.whistleblowing.Config.Link;
 import senja.fatamorgana.whistleblowing.Config.SharedPrefManager;
 import senja.fatamorgana.whistleblowing.Config.UpdateApp;
@@ -55,9 +59,9 @@ import senja.fatamorgana.whistleblowing.Config.UpdateApp;
 import static android.os.Environment.getExternalStoragePublicDirectory;
 import static senja.fatamorgana.whistleblowing.Config.Link.AppFolder;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
-    Button bt_logout, bt_profile;
+    Button bt_logout, bt_profile, bt_mulai;
     SharedPrefManager SP_Help;
     Boolean connect_status;
     JSONArray resultJson = null;
@@ -65,6 +69,8 @@ public class MainActivity extends AppCompatActivity {
     Handler handler;
     UpdateApp UpdateApps;
     private static final int REQUEST_WRITE_PERMISSION = 786;
+    private static final int WRITE_REQUEST_CODE = 300;
+    SweetAlertDialog updateDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +88,16 @@ public class MainActivity extends AppCompatActivity {
 
         bt_logout = (Button)findViewById(R.id.bt_logout);
         bt_profile = (Button)findViewById(R.id.bt_profile);
+        bt_mulai = (Button)findViewById(R.id.bt_mulai);
+
+        bt_mulai.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent ee = new Intent(MainActivity.this, VideoActivity.class);
+                startActivity(ee);
+                overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+            }
+        });
 
         bt_logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,8 +129,32 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_WRITE_PERMISSION && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             Toast.makeText(this, "Permission granted", Toast.LENGTH_LONG).show();
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        downloadUpdate();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> list) {
+        final SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE);
+        pDialog.setTitleText("Oops...");
+        pDialog.setContentText("Permission Ditolak");
+        pDialog.setConfirmText("Ok");
+        pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                delayCheck();
+                pDialog.dismissWithAnimation();
+            }
+        });
+        pDialog.setCancelable(false);
+        pDialog.show();
     }
 
     private void requestPermission() {
@@ -248,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
                 if (connect_status){
                     CheckApp("1");
                 }else {
-//                    noConnection();
+                    noConnection();
                 }
             }
         }
@@ -267,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
         pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
             @Override
             public void onClick(SweetAlertDialog sweetAlertDialog) {
-                update();
+                downloadUpdate();
                 pDialog.dismissWithAnimation();
             }
         });
@@ -290,27 +330,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void update(){
-        SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
-        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        pDialog.setTitleText("\nDownloading");
-        pDialog.setCancelable(false);
-        pDialog.show();
-        downloadUpdate();
+        updateDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        updateDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        updateDialog.setTitleText("\nDownloading");
+        updateDialog.setCancelable(false);
+        updateDialog.show();
+        InstallUpdate();
     }
 
     void downloadUpdate(){
-
-        int check = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (check == PackageManager.PERMISSION_GRANTED) {
-
-//            UpdateApps = new UpdateApp();
-//            UpdateApps.setContext(getApplicationContext());
-//            UpdateApps.execute(Link.Update);
-            InstallUpdate();
-
+        if (CheckPermissionStorage.isSDCardPresent()) {
+            if (EasyPermissions.hasPermissions(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                update();
+            }else {
+                EasyPermissions.requestPermissions(MainActivity.this, getString(R.string.write_file), WRITE_REQUEST_CODE, Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
         } else {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1024);
-            downloadUpdate();
+            EasyPermissions.requestPermissions(MainActivity.this, getString(R.string.write_file), WRITE_REQUEST_CODE, Manifest.permission.READ_EXTERNAL_STORAGE);
         }
     }
 
@@ -321,10 +357,13 @@ public class MainActivity extends AppCompatActivity {
         final Uri uri = Uri.parse("file://" + destination);
 
         //Delete update file if exists
-        File file = new File(destination);
-        if (file.exists())
-            //file.delete() - test this, I think sometimes it doesnt work
+        File file = new File(uri.getPath());
+        if(file.exists()){
             file.delete();
+            if(file.exists()){
+                getApplicationContext().deleteFile(file.getName());
+            }
+        }
 
         //get url of app on server
         String url = Link.Update;
@@ -344,23 +383,10 @@ public class MainActivity extends AppCompatActivity {
         //set BroadcastReceiver to install app when .apk is downloaded
         BroadcastReceiver onComplete = new BroadcastReceiver() {
             public void onReceive(Context ctxt, Intent intent) {
+                updateDialog.dismissWithAnimation();
                 requestPermission();
                 canReadWriteExternal();
-//                File toInstall = new File(Environment.getExternalStoragePublicDirectory(Link.AppFolder),"/Update.apk");
-//                Uri fileUri = FileProvider.getUriForFile(ctxt,getApplicationContext().getPackageName() + ".provider", toInstall);
-//
-//                Intent install = new Intent(Intent.ACTION_VIEW);
-//                install.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                install.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                install.setDataAndType(fileUri,
-//                        manager.getMimeTypeForDownloadedFile(downloadId));
-//                startActivity(install);
-//
-//                unregisterReceiver(this);
-//                finish();
 
-//                File toInstall = new File(Environment.getExternalStoragePublicDirectory(AppFolder),"/Update.apk");
-//                Log.e("PATH =>>",""+toInstall);
                 String Lokasi = Link.AppFolder;
                 File sdcard = getExternalStoragePublicDirectory(Lokasi);
                 File file = new File(sdcard, fileName);

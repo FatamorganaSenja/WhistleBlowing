@@ -18,10 +18,11 @@
             android:src="@drawable/logo_whistle"
             android:textColor="@color/colorPrimary"/>
         <Button
+            android:id="@+id/bt_mulai"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@color/colorAccent"
+            android:background="@color/colorAccentOri"
             android:text="@string/start"
             android:textColor="@color/colorPrimary"/>
         <Button
@@ -29,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@color/colorAccent"
+            android:background="@color/colorAccentOri"
             android:text="@string/profil"
             android:textColor="@color/colorPrimary"/>
         <Button
@@ -37,7 +38,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:background="@color/colorAccent"
+            android:background="@color/colorAccentOri"
             android:text="@string/logout"
             android:textColor="@color/colorPrimary"/>
     </LinearLayout>

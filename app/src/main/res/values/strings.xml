@@ -10,6 +10,7 @@
     <string name="info">Info</string>
     <string name="koneksi_error">Pakai Kuota Sendiri Ya :)</string>
     <string name="akun_false">Kamu Belum Terdaftar !, Coba Cek Kembali NIM Anda</string>
+    <string name="write_file">Aplikasi ini membutuhkan izin untuk mengakses file.</string>
 
     <string name="authority_provider">senja.fatamorgana.whistleblowing.fileprovider</string>
     <string name="appdownload">Whistleblowing/Download</string>

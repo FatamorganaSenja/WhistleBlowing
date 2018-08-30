@@ -17,7 +17,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Fatamorgana Senja"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorAccentOri"
         android:textStyle="bold"
         android:drawableRight="@drawable/ic_love"
         android:drawablePadding="4dp"

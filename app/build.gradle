@@ -7,7 +7,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         useLibrary 'org.apache.http.legacy'
     }
@@ -28,4 +28,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.airbnb.android:lottie:2.2.0'
     implementation 'com.github.f0ris.sweetalert:library:1.5.1'
+    implementation 'bg.devlabs.fullscreenvideoview:library:0.0.9'
+    implementation 'pub.devrel:easypermissions:0.2.0'
 }
