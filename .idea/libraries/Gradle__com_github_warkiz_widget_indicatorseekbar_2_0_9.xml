@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.github.warkiz.widget:indicatorseekbar-2.0.9">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/indicatorseekbar-2.0.9.aar/e176dd5d8b09123480e73884278929ef/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/indicatorseekbar-2.0.9.aar/e176dd5d8b09123480e73884278929ef/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.warkiz.widget/indicatorseekbar/2.0.9/23502f54fcd45bec1e6007ca97ceafecbf6c5814/indicatorseekbar-2.0.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

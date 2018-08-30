@@ -6,6 +6,45 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimaryDark"
     tools:context=".MainActivity">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:padding="12dp">
+        <ImageView
+            android:id="@+id/iv_profile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/ic_user"
+            android:tint="@color/colorAccentOri"/>
+        <TextView
+            android:id="@+id/tv_nmMahasiswa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/iv_profile"
+            android:layout_marginLeft="8dp"
+            android:text="Nama Mahasiswa"
+            android:textColor="@color/colorAccentOri"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tv_nim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_below="@+id/tv_nmMahasiswa"
+            android:layout_toRightOf="@id/iv_profile"
+            style="@style/Base.TextAppearance.AppCompat.Small"
+            android:textColor="@color/colorAccentOri"
+            android:text="16812131004"/>
+        <ImageView
+            android:id="@+id/iv_logout"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_logout"
+            android:tint="@color/colorAccentOri"/>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,7 +56,16 @@
             android:layout_centerInParent="true"
             android:src="@drawable/logo_whistle"
             android:textColor="@color/colorPrimary"/>
+        <ImageView
+            android:id="@+id/iv_mulai"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:src="@drawable/ic_play"
+            android:layout_gravity="center"
+            android:tint="@color/colorAccentOri"
+            android:layout_marginTop="8dp"/>
         <Button
+            android:visibility="gone"
             android:id="@+id/bt_mulai"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,6 +74,7 @@
             android:text="@string/start"
             android:textColor="@color/colorPrimary"/>
         <Button
+            android:visibility="gone"
             android:id="@+id/bt_profile"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,6 +83,7 @@
             android:text="@string/profil"
             android:textColor="@color/colorPrimary"/>
         <Button
+            android:visibility="gone"
             android:id="@+id/bt_logout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

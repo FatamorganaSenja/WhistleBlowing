@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: bg.devlabs.fullscreenvideoview:library-0.0.9">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-0.0.9.aar/91f0e15a8d4939d8e807417285a07981/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/library-0.0.9.aar/91f0e15a8d4939d8e807417285a07981/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/bg.devlabs.fullscreenvideoview/library/0.0.9/47914ef91923a4742c7312a77946aefb9c4ddcba/library-0.0.9-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

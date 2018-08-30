@@ -24,6 +24,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.PermissionRequest;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -61,7 +62,7 @@ import static senja.fatamorgana.whistleblowing.Config.Link.AppFolder;
 
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
-    Button bt_logout, bt_profile, bt_mulai;
+    ImageView iv_logout, iv_profile, iv_mulai;
     SharedPrefManager SP_Help;
     Boolean connect_status;
     JSONArray resultJson = null;
@@ -86,11 +87,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
         app_version = BuildConfig.VERSION_NAME;
 
-        bt_logout = (Button)findViewById(R.id.bt_logout);
-        bt_profile = (Button)findViewById(R.id.bt_profile);
-        bt_mulai = (Button)findViewById(R.id.bt_mulai);
+        iv_logout = (ImageView) findViewById(R.id.iv_logout);
+        iv_profile = (ImageView) findViewById(R.id.iv_profile);
+        iv_mulai = (ImageView) findViewById(R.id.iv_mulai);
 
-        bt_mulai.setOnClickListener(new View.OnClickListener() {
+        iv_mulai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent ee = new Intent(MainActivity.this, VideoActivity.class);
@@ -99,19 +100,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        bt_logout.setOnClickListener(new View.OnClickListener() {
+        iv_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SP_Help.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
-                Intent i = new Intent(MainActivity.this, LoginActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-                overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
-                finish();
+               logout();
             }
         });
 
-        bt_profile.setOnClickListener(new View.OnClickListener() {
+        iv_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE);
@@ -413,4 +409,24 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         //register receiver for when .apk download is compete
         registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
+
+    void logout(){
+        SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this);
+        pDialog.setTitleText("Anda yakin ingin logout?");
+        pDialog.setConfirmText("Ya");
+        pDialog.setCancelText("Tidak");
+        pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                SP_Help.saveSPBoolean(SharedPrefManager.SP_SUDAH_LOGIN, false);
+                Intent i = new Intent(MainActivity.this, LoginActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(i);
+                overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+                finish();
+            }
+        });
+        pDialog.show();
+    }
 }
+
