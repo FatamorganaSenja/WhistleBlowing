@@ -30,4 +30,5 @@ dependencies {
     implementation 'com.github.f0ris.sweetalert:library:1.5.1'
     implementation 'bg.devlabs.fullscreenvideoview:library:0.0.9'
     implementation 'pub.devrel:easypermissions:0.2.0'
+    implementation 'com.github.warkiz.widget:indicatorseekbar:2.0.9'
 }
