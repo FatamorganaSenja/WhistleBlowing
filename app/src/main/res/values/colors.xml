@@ -2,11 +2,15 @@
 <resources>
     <color name="colorPrimary">#23b6c9</color>
     <color name="colorPrimaryDark">#26c6da</color>
-    <color name="colorAccent">#ffffff</color>
+    <color name="colorAccent">#23b6c9</color>
+    <color name="colorAccentOri">#ffffff</color>
     <color name="colorAccentDark">#f0f0f0</color>
 
     <!-- dots colors -->
     <color name="dot_inactive">#1fa3b4</color>
     <color name="dot_active">#ffffff</color>
+
+    <!-- COLOR DOWNLOADER -->
+    <color name="dl_string">#000000</color>
 
 </resources>
