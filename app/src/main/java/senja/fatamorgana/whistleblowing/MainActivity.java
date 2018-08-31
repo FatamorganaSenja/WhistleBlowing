@@ -25,6 +25,7 @@ import android.view.View;
 import android.webkit.PermissionRequest;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.HttpEntity;
@@ -49,6 +50,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import pub.devrel.easypermissions.EasyPermissions;
@@ -63,15 +65,18 @@ import static senja.fatamorgana.whistleblowing.Config.Link.AppFolder;
 public class MainActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     ImageView iv_logout, iv_profile, iv_mulai;
+    TextView tv_nmMahasiswa, tv_nim;
     SharedPrefManager SP_Help;
-    Boolean connect_status;
+    Boolean connect_status, update = false, video = false;
     JSONArray resultJson = null;
-    String data_result, app_version, update_version;
+    String data_result, app_version, update_version, status_server;
     Handler handler;
     UpdateApp UpdateApps;
+    Integer r1, max = 4, min = 1;
+    String n1;
     private static final int REQUEST_WRITE_PERMISSION = 786;
     private static final int WRITE_REQUEST_CODE = 300;
-    SweetAlertDialog updateDialog;
+    SweetAlertDialog updateDialog, noChance, videoDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,13 +95,24 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         iv_logout = (ImageView) findViewById(R.id.iv_logout);
         iv_profile = (ImageView) findViewById(R.id.iv_profile);
         iv_mulai = (ImageView) findViewById(R.id.iv_mulai);
+        tv_nmMahasiswa = (TextView)findViewById(R.id.tv_nmMahasiswa);
+        tv_nim = (TextView)findViewById(R.id.tv_nim);
+
+        tv_nmMahasiswa.setText(SP_Help.getSPNama());
+        tv_nim.setText(SP_Help.getSPNIM());
 
         iv_mulai.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent ee = new Intent(MainActivity.this, VideoActivity.class);
-                startActivity(ee);
-                overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+                if (Integer.parseInt(SP_Help.getSPChance()) > 0 ){
+                    randomNumber();
+                    downloadVideo("1");
+                }else {
+                    noChance();
+                }
+//                Intent ee = new Intent(MainActivity.this, VideoActivity.class);
+//                startActivity(ee);
+//                overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
             }
         });
 
@@ -133,7 +149,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
     @Override
     public void onPermissionsGranted(int requestCode, List<String> list) {
-        downloadUpdate();
+
+        if (update){
+            downloadUpdate();
+        }
+
+        if (video){
+            downloadVideo("1");
+        }
     }
 
     @Override
@@ -235,11 +258,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 
             }
             update_version = SP_Help.getSpAppversion();
-            if (update_version.equals(app_version)){
-                Log.e("VERSION ==>",update_version+" ==== "+app_version);
+            status_server = SP_Help.getSpAppstatus();
+
+            if (status_server.equals("online")){
+                if (update_version.equals(app_version)){
+                    Log.e("VERSION ==>",update_version+" ==== "+app_version);
+                }else {
+                    updateAlert();
+                }
             }else {
-                updateAlert();
+                statusAlert();
             }
+
+
 
             // Stop refresh animation
         } catch (JSONException e) {
@@ -310,6 +341,39 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         pDialog.show();
     }
 
+    void statusAlert(){
+        final SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE);
+        pDialog.setTitleText("Oops...");
+        pDialog.setContentText("Server Sedang \nMaintenance");
+        pDialog.setConfirmText("Ok");
+        pDialog.setCancelable(false);
+        pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                pDialog.dismissWithAnimation();
+                finish();
+            }
+        });
+        pDialog.show();
+    }
+
+    void noChance(){
+        noChance = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
+        noChance.setTitleText("Terimakasih");
+        noChance.setContentText("Anda Sudah\n Menjawab Quiz");
+        noChance.setConfirmText("Ok");
+        noChance.show();
+    }
+
+    void videoDownload(final String id){
+        videoDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        videoDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        videoDialog.setTitleText("\nDownloading\n Video");
+        videoDialog.setCancelable(false);
+        videoDialog.show();
+        checkVideo(id);
+    }
+
     void noConnection(){
         SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE);
         pDialog.setTitleText("Oops...");
@@ -340,9 +404,25 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 update();
             }else {
                 EasyPermissions.requestPermissions(MainActivity.this, getString(R.string.write_file), WRITE_REQUEST_CODE, Manifest.permission.READ_EXTERNAL_STORAGE);
+                update = true;
             }
         } else {
             EasyPermissions.requestPermissions(MainActivity.this, getString(R.string.write_file), WRITE_REQUEST_CODE, Manifest.permission.READ_EXTERNAL_STORAGE);
+            update = true;
+        }
+    }
+
+    void downloadVideo(final String id){
+        if (CheckPermissionStorage.isSDCardPresent()) {
+            if (EasyPermissions.hasPermissions(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                videoDownload(id);
+            }else {
+                video = true;
+                EasyPermissions.requestPermissions(MainActivity.this, getString(R.string.write_file), WRITE_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            }
+        } else {
+            video = true;
+            EasyPermissions.requestPermissions(MainActivity.this, getString(R.string.write_file), WRITE_REQUEST_CODE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
         }
     }
 
@@ -423,6 +503,110 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(i);
                 overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+                finish();
+            }
+        });
+        pDialog.show();
+    }
+
+    void randomNumber() {
+        Random ran1 = new Random();
+        r1 = ran1.nextInt(max - min + 1) + min;
+        n1 = Integer.toString(r1);
+    }
+
+    void checkVideo(final String id){
+//        requestPermission();
+//        canReadWriteExternal();
+        String destination = Environment.getExternalStoragePublicDirectory(AppFolder) + "/";
+        final String fileName = id+".mp4";
+        destination += fileName;
+        final Uri uri = Uri.parse("file://" + destination);
+
+        //Delete update file if exists
+        File file = new File(uri.getPath());
+        if(file.exists()){
+//            file.delete();
+                Intent intent = new Intent(MainActivity.this, VideoActivity.class);
+                Bundle c = new Bundle();
+
+                c.putString("file", fileName);
+                c.putString("id", id);
+                intent.putExtras(c);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                startActivity(intent);
+                overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+
+        }else{
+            //get url of app on server
+            String url = Link.getVideo+fileName;
+
+            //set downloadmanager
+            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+            request.setDescription("Whistleblowing");
+            request.setTitle("Downloading Video");
+
+            //set destination
+            request.setDestinationUri(uri);
+
+            // get download service and enqueue file
+            final DownloadManager manager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+            final long downloadId = manager.enqueue(request);
+
+            //set BroadcastReceiver to install app when .apk is downloaded
+            BroadcastReceiver onComplete = new BroadcastReceiver() {
+                public void onReceive(Context ctxt, Intent intent) {
+//                    updateDialog.dismissWithAnimation();
+
+                    intent = new Intent(MainActivity.this, VideoActivity.class);
+                    Bundle c = new Bundle();
+
+                    c.putString("file", fileName);
+                    intent.putExtras(c);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+//                    String Lokasi = Link.AppFolder;
+//                    File sdcard = getExternalStoragePublicDirectory(Lokasi);
+//                    File file = new File(sdcard, fileName);
+
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//
+//                        Uri fileUri = FileProvider.getUriForFile(MainActivity.this,  getResources().getString(R.string.authority_provider), file);
+//                        intent = new Intent(Intent.ACTION_VIEW, fileUri);
+//                        intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+//                        intent.setDataAndType(fileUri, "application/vnd.android" + ".package-archive");
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                        startActivity(intent);
+//                        finish();
+//                    } else {
+//                        intent = new Intent(Intent.ACTION_VIEW);
+//                        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+//                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+//                        startActivity(intent);
+//                        finish();
+//                    }
+                }
+            };
+            //register receiver for when .apk download is compete
+            registerReceiver(onComplete, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        }
+    }
+
+    @Override
+    public void onBackPressed(){
+        final SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this);
+        pDialog.setTitleText("Anda Mau Keluar Aplikasi ?");
+        pDialog.setConfirmText("Ya");
+        pDialog.setCancelText("Tidak");
+        pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+            @Override
+            public void onClick(SweetAlertDialog sweetAlertDialog) {
+                pDialog.dismissWithAnimation();
                 finish();
             }
         });
