@@ -15,6 +15,8 @@ public class SharedPrefManager {
     public static final String SP_FIRST = "pertama";
     public static final String SP_CHANCE = "chance";
     public static final String SP_QUESTION = "question";
+    public static final String SP_QUESTION_TAKE = "izi";
+    public static final String SP_FILENAME = "mp4";
     public static final String SP_ANSWER = "answer";
     public static final String SP_SEARCH_KEY = "key";
     public static final String SP_APPID = "app_id";
@@ -71,6 +73,14 @@ public class SharedPrefManager {
 
     public String getSpQuestion() {
         return sp.getString(SP_QUESTION, "");
+    }
+
+    public String getSpQuestionTake() {
+        return sp.getString(SP_QUESTION_TAKE, "");
+    }
+
+    public String getSpFilename() {
+        return sp.getString(SP_FILENAME, "");
     }
 
     public String getSpAppid() {
