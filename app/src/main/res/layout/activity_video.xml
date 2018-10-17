@@ -8,12 +8,6 @@
     tools:context=".VideoActivity"
     android:background="#e3fbff">
 
-    <bg.devlabs.fullscreenvideoview.FullscreenVideoView
-
-        android:id="@+id/fullscreenVideoView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <ImageView
         android:tint="@color/colorPrimaryDark"
         android:layout_marginTop="30dp"

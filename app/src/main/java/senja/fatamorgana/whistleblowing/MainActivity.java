@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     SharedPrefManager SP_Help;
     Boolean connect_status, update = false, video = false;
     JSONArray resultJson = null;
-    String data_result, app_version, update_version, status_server;
+    String data_result, app_version, update_version, status_server, trigger;
     Handler handler;
     UpdateApp UpdateApps;
     Integer r1, max = 4, min = 1;
@@ -87,10 +87,22 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
 //        builder.detectFileUriExposure();
 
 //        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder(); StrictMode.setVmPolicy(builder.build());
-
         SP_Help = new SharedPrefManager(this);
-
         app_version = BuildConfig.VERSION_NAME;
+        trigger = SP_Help.getSpQuestionTake();
+        Log.e("TRIG", trigger);
+        if (trigger.length() > 0){
+            Intent i = new Intent(MainActivity.this, VideoActivity.class)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+            overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
+            finish();
+        }else {
+            handler = new Handler();
+            delayCheck();
+        }
+
+
 
         iv_logout = (ImageView) findViewById(R.id.iv_logout);
         iv_profile = (ImageView) findViewById(R.id.iv_profile);
@@ -123,20 +135,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
             }
         });
 
-        iv_profile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE);
-                pDialog.setTitleText("Oops...");
-                pDialog.setContentText("Aplikasi Anda \nKudet");
-                pDialog.setConfirmText("Update");
-                pDialog.setCancelable(false);
-                pDialog.show();
-            }
-        });
+//        iv_profile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                SweetAlertDialog pDialog = new SweetAlertDialog(MainActivity.this, SweetAlertDialog.ERROR_TYPE);
+//                pDialog.setTitleText("Oops...");
+//                pDialog.setContentText("Aplikasi Anda \nKudet");
+//                pDialog.setConfirmText("Update");
+//                pDialog.setCancelable(false);
+//                pDialog.show();
+//            }
+//        });
 
-        handler = new Handler();
-        delayCheck();
+
     }
 
     @Override
@@ -527,7 +538,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         File file = new File(uri.getPath());
         if(file.exists()){
 //            file.delete();
-                Intent intent = new Intent(MainActivity.this, VideoActivity.class);
+                SP_Help.saveSPString(SharedPrefManager.SP_FILENAME, fileName);
+                Log.e("MAIN FILE", fileName);
+                SP_Help.saveSPString(SharedPrefManager.SP_QUESTION_TAKE, id);
+                Intent intent = new Intent(MainActivity.this, FullVideoActivity.class);
                 Bundle c = new Bundle();
 
                 c.putString("file", fileName);
@@ -559,7 +573,9 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 public void onReceive(Context ctxt, Intent intent) {
 //                    updateDialog.dismissWithAnimation();
 
-                    intent = new Intent(MainActivity.this, VideoActivity.class);
+                    SP_Help.saveSPString(SharedPrefManager.SP_FILENAME, fileName);
+                    SP_Help.saveSPString(SharedPrefManager.SP_QUESTION_TAKE, id);
+                    intent = new Intent(MainActivity.this, FullVideoActivity.class);
                     Bundle c = new Bundle();
 
                     c.putString("file", fileName);

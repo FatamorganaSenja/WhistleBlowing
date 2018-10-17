@@ -49,7 +49,6 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class VideoActivity extends AppCompatActivity {
 
-    FullscreenVideoView fullscreenVideoView;
     Button btn_submit;
     String video_id, jawaban = "25", data_result, question;
     IndicatorSeekBar sb_indicator;
@@ -66,7 +65,6 @@ public class VideoActivity extends AppCompatActivity {
 
         SP_Help = new SharedPrefManager(this);
 
-        fullscreenVideoView = (FullscreenVideoView) findViewById(R.id.fullscreenVideoView);
         btn_submit = (Button)findViewById(R.id.btn_submit);
         sb_indicator = (IndicatorSeekBar) findViewById(R.id.sb_indicator);
         ll_ulangi = (LinearLayout)findViewById(R.id.ll_ulangi);
@@ -74,34 +72,32 @@ public class VideoActivity extends AppCompatActivity {
         ll_ulangi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent ea = new Intent(VideoActivity.this, VideoActivity.class);
+                Intent ea = new Intent(VideoActivity.this, FullVideoActivity.class);
                 ea.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                Bundle c = new Bundle();
-
-                c.putString("file", video_id);
-                c.putString("id", question);
-                ea.putExtras(c);
                 startActivity(ea);
                 overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
                 finish();
             }
         });
 
-        Bundle b = this.getIntent().getExtras();
-        video_id = b.getString("file");
-        question = b.getString("id");
+        video_id = SP_Help.getSpQuestionTake();
+        question = video_id;
 
-        String Lokasi = Link.AppFolder;
-        File sdcard = getExternalStoragePublicDirectory(Lokasi);
-        File file = new File(sdcard, video_id);
-        Uri fileUri = FileProvider.getUriForFile(VideoActivity.this,  getResources().getString(R.string.authority_provider), file);
-        File path = new File(file.getPath());
-        fullscreenVideoView.toggleFullscreen();
-        fullscreenVideoView.videoFile(path)
-                .enableAutoStart()
-                .canSeekBackward(false)
-                .canSeekForward(false);
+//        Bundle b = this.getIntent().getExtras();
+//        video_id = b.getString("file");
+//        question = b.getString("id");
+
+//        String Lokasi = Link.AppFolder;
+//        File sdcard = getExternalStoragePublicDirectory(Lokasi);
+//        File file = new File(sdcard, video_id);
+//        Uri fileUri = FileProvider.getUriForFile(VideoActivity.this,  getResources().getString(R.string.authority_provider), file);
+//        File path = new File(file.getPath());
+//        fullscreenVideoView.toggleFullscreen();
+//        fullscreenVideoView.videoFile(path)
+//                .enableAutoStart()
+//                .canSeekBackward(false)
+//                .canSeekForward(false);
 
 
         btn_submit.setOnClickListener(new View.OnClickListener() {
@@ -317,6 +313,8 @@ public class VideoActivity extends AppCompatActivity {
     }
 
     void QuizDialog(){
+        SP_Help.saveSPString(SharedPrefManager.SP_QUESTION_TAKE,"");
+        SP_Help.saveSPString(SharedPrefManager.SP_FILENAME,"");
         QuizDialog = new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE);
         QuizDialog.setTitleText("Terimakasih");
         QuizDialog.setContentText("Atas Partisipasi\n Anda");

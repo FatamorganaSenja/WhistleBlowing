@@ -21,20 +21,20 @@
     <string name="next">Selanjutnya</string>
 
     <!--Slide 1-->
-    <string name="slide_title1">Lokasi</string>
-    <string name="slide_desc1">Kamu hanya bisa menggunakan aplikasi ini di wilayah kampus UNY</string>
+    <string name="slide_title1">Koneksi !</string>
+    <string name="slide_desc1">Pastikan Perangkat terkoneksi dengan internet, Agar aplikasi ini dapat berjalan</string>
 
     <!--Slide 2-->
-    <string name="slide_title2">Video</string>
-    <string name="slide_desc2">Tonton video hingga selesai agar soal muncul. Ingat video hanya diputar sekali, jadi perhatikan dengan baik</string>
+    <string name="slide_title2">Login !</string>
+    <string name="slide_desc2">Hanya mahasiswa terdaftar yang bisa menggunakan aplikasi ini</string>
 
     <!--Slide 3-->
-    <string name="slide_title3">Waktunya Quiz!</string>
-    <string name="slide_desc3">Soal akan muncul setelah video selesai diputar. Jawab sesuai dengan apa yang kamu yakini benar</string>
+    <string name="slide_title3">Video</string>
+    <string name="slide_desc3">Tonton video hingga selesai agar soal muncul. Video setiap peserta berbeda-beda, jadi perhatikan dengan baik</string>
 
     <!--Slide 4-->
-    <string name="slide_title4">Hadiah !!</string>
-    <string name="slide_desc4">Jika beruntung kamu akan mendapatkan hadiah kejutan setelah menyelesaikan Quiz</string>
+    <string name="slide_title4">Waktunya Quiz!</string>
+    <string name="slide_desc4">Soal akan muncul setelah video selesai diputar. Jawab sesuai dengan apa yang kamu yakini benar</string>
 
     <!-- Login -->
     <string name="loginKosong">Masukkan NIM Anda :)</string>

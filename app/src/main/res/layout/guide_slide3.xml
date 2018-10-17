@@ -14,7 +14,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="140dp"
-            android:src="@drawable/guide_quiz"/>
+            android:src="@drawable/guide_video"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
