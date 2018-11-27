@@ -3,8 +3,10 @@ package senja.fatamorgana.whistleblowing;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,13 +51,13 @@ import static android.os.Environment.getExternalStoragePublicDirectory;
 
 public class VideoActivity extends AppCompatActivity {
 
-    Button btn_submit;
+    Button btn_submit, bt_setuju, bt_tsetuju;
     String video_id, jawaban = "25", data_result, question;
     IndicatorSeekBar sb_indicator;
     Boolean connect_status;
     JSONArray resultJson = null;
     SharedPrefManager SP_Help;
-    SweetAlertDialog ConnectionDialog, QuizDialog, FailedDialog;
+    SweetAlertDialog ConnectionDialog, QuizDialog, FailedDialog, checkConnectionDialog, emptyDialog;
     LinearLayout ll_ulangi;
 
     @Override
@@ -66,6 +68,8 @@ public class VideoActivity extends AppCompatActivity {
         SP_Help = new SharedPrefManager(this);
 
         btn_submit = (Button)findViewById(R.id.btn_submit);
+        bt_setuju = (Button)findViewById(R.id.bt_setuju);
+        bt_tsetuju = (Button)findViewById(R.id.bt_tsetuju);
         sb_indicator = (IndicatorSeekBar) findViewById(R.id.sb_indicator);
         ll_ulangi = (LinearLayout)findViewById(R.id.ll_ulangi);
 
@@ -103,19 +107,46 @@ public class VideoActivity extends AppCompatActivity {
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SweetAlertDialog pDialog = new SweetAlertDialog(VideoActivity.this);
-                pDialog.setTitleText("Anda yakin ingin dengan jawaban ini?");
-                pDialog.setConfirmText("Ya");
-                pDialog.setCancelText("Tidak");
-                pDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+                checkConnectionDialog = new SweetAlertDialog(VideoActivity.this);
+                checkConnectionDialog.setTitleText("Anda yakin ingin dengan jawaban ini?");
+                checkConnectionDialog.setConfirmText("Ya");
+                checkConnectionDialog.setCancelText("Tidak");
+                checkConnectionDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
                     @Override
                     public void onClick(SweetAlertDialog sweetAlertDialog) {
                         ConnectionDialog();
-                        parseIndicator();
-                        pDialog.dismissWithAnimation();
+//                        parseIndicator();
+                        checkJawabanUser();
+                        checkConnectionDialog.dismissWithAnimation();
                     }
                 });
-                pDialog.show();
+                checkConnectionDialog.show();
+            }
+        });
+
+        bt_setuju.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bt_tsetuju.getVisibility() == View.VISIBLE){
+                    bt_tsetuju.setVisibility(View.INVISIBLE);
+                    bt_setuju.setTextColor(Color.GREEN);
+                }else if (bt_tsetuju.getVisibility() == View.INVISIBLE){
+                    bt_tsetuju.setVisibility(View.VISIBLE);
+                    bt_setuju.setTextColor(Color.WHITE);
+                }
+            }
+        });
+
+        bt_tsetuju.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bt_setuju.getVisibility() == View.VISIBLE){
+                    bt_setuju.setVisibility(View.INVISIBLE);
+                    bt_tsetuju.setTextColor(Color.GREEN);
+                }else if (bt_setuju.getVisibility() == View.INVISIBLE){
+                    bt_setuju.setVisibility(View.VISIBLE);
+                    bt_tsetuju.setTextColor(Color.WHITE);
+                }
             }
         });
 
@@ -135,6 +166,56 @@ public class VideoActivity extends AppCompatActivity {
 
             }
         });
+
+        final MediaPlayer question = MediaPlayer.create(this, R.raw.question);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                question.start();
+            }
+        }, 500);
+    }
+
+    void checkJawabanUser(){
+        if (bt_setuju.getVisibility() == View.VISIBLE && bt_tsetuju.getVisibility() == View.INVISIBLE){
+            jawaban = "Setuju";
+            Handler handler1 = new Handler();
+            handler1.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    checkConnection();
+                }
+            }, 1000);
+        }else if (bt_tsetuju.getVisibility() == View.VISIBLE && bt_setuju.getVisibility() == View.INVISIBLE){
+            jawaban = "Tidak Setuju";
+            Handler handler1 = new Handler();
+            handler1.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    checkConnection();
+                }
+            }, 1000);
+        }else {
+            emptyResponse();
+        }
+    }
+
+    void emptyResponse(){
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ConnectionDialog.dismissWithAnimation();
+                Handler handler1 = new Handler();
+                handler1.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        emptyDialog();
+                    }
+                }, 500);
+            }
+        }, 2000);
     }
 
     void parseIndicator(){
@@ -277,12 +358,24 @@ public class VideoActivity extends AppCompatActivity {
                 connect_status = responseString;
                 Log.e("Internet", " => "+connect_status);
                 if (connect_status){
-                    jawabQuiz(SP_Help.getSPNIM(), question, jawaban);
                     ConnectionDialog.dismissWithAnimation();
+                    Handler handler1 = new Handler();
+                    handler1.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            jawabQuiz(SP_Help.getSPNIM(), question, jawaban);
+                        }
+                    }, 500);
                 }else {
                     Toast.makeText(VideoActivity.this, R.string.koneksi_error, Toast.LENGTH_SHORT).show();
                     ConnectionDialog.dismissWithAnimation();
-                    FailedDialog();
+                    Handler handler1 = new Handler();
+                    handler1.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            FailedDialog();
+                        }
+                    }, 500);
 //                    rl_prosesLogin.animate().alpha(0.0f).setDuration(1000);
 //                    rl_login.setAnimation(fadein);
                 }
@@ -308,6 +401,14 @@ public class VideoActivity extends AppCompatActivity {
         FailedDialog.setContentText("Koneksi Bermasalah");
         FailedDialog.setConfirmText("Ok");
         FailedDialog.show();
+    }
+
+    void emptyDialog(){
+        emptyDialog = new SweetAlertDialog(this, SweetAlertDialog.WARNING_TYPE);
+        emptyDialog.setTitleText("Oops...");
+        emptyDialog.setContentText("Kamu Harus Memilih Jawaban !");
+        emptyDialog.setConfirmText("Ok");
+        emptyDialog.show();
     }
 
     void QuizDialog(){
