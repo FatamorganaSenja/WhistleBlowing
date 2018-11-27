@@ -217,8 +217,6 @@ public class VideoActivity extends AppCompatActivity {
 
         if (a.equals("0")) {
             Toast.makeText(this, R.string.post_false, Toast.LENGTH_SHORT).show();
-//            rl_prosesLogin.animate().alpha(0.0f).setDuration(1000);
-//            rl_login.setAnimation(fadein);
 
         }else if(data_result.length() > 5){
             try {
