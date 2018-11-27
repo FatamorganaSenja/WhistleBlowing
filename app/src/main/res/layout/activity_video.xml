@@ -44,14 +44,51 @@
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/sb_layout"
-        android:text="Berikan Pendapat Anda :"
+        android:layout_above="@+id/ll_question"
+        android:text="@string/question"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"/>
+    <LinearLayout
+        android:id="@+id/ll_question"
+        android:layout_above="@+id/btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:weightSum="20"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_gravity="center_vertical"
+            android:id="@+id/bt_setuju"
+            android:layout_width="0dp"
+            android:layout_weight="9"
+            android:layout_height="wrap_content"
+            android:text="@string/qSetuju"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccentOri"/>
+        <Button
+            android:layout_gravity="center_vertical"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccentOri"/>
+        <Button
+            android:layout_gravity="center_vertical"
+            android:id="@+id/bt_tsetuju"
+            android:layout_width="0dp"
+            android:layout_weight="9"
+            android:layout_height="wrap_content"
+            android:text="@string/qTSetuju"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorAccentOri"/>
+    </LinearLayout>
     <com.warkiz.widget.IndicatorStayLayout
         android:id="@+id/sb_layout"
         android:layout_above="@+id/btn_submit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_marginBottom="40dp">
         <com.warkiz.widget.IndicatorSeekBar
             android:id="@+id/sb_indicator"

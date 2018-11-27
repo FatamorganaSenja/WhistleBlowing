@@ -371,7 +371,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     void noChance(){
         noChance = new SweetAlertDialog(this, SweetAlertDialog.NORMAL_TYPE);
         noChance.setTitleText("Terimakasih");
-        noChance.setContentText("Anda Sudah\n Menjawab Quiz");
+        noChance.setContentText("Anda Sudah Berpartisipasi\nDalam Quiz Ini");
         noChance.setConfirmText("Ok");
         noChance.show();
     }

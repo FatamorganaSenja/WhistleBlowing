@@ -38,4 +38,9 @@
 
     <!-- Login -->
     <string name="loginKosong">Masukkan NIM Anda :)</string>
+
+    <!-- Question -->
+    <string name="question">Jika Anda Menjadi Dilan \n Apa Yang Anda Lakukan ?</string>
+    <string name="qSetuju">Setuju</string>
+    <string name="qTSetuju">Tidak Setuju</string>
 </resources>
