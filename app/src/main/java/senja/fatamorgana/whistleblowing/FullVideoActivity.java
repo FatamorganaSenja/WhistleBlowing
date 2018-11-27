@@ -1,8 +1,10 @@
 package senja.fatamorgana.whistleblowing;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v4.content.FileProvider;
@@ -11,11 +13,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.MediaController;
 import android.widget.VideoView;
 
 import java.io.File;
 
 import bg.devlabs.fullscreenvideoview.FullscreenVideoView;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import senja.fatamorgana.whistleblowing.Config.Link;
 import senja.fatamorgana.whistleblowing.Config.SharedPrefManager;
 
@@ -43,20 +47,44 @@ public class FullVideoActivity extends Activity implements MediaPlayer.OnComplet
             startActivity(a);
             finish();
         }else {
-            String Lokasi = Link.AppFolder;
-            File sdcard = getExternalStoragePublicDirectory(Lokasi);
-            File file = new File(sdcard, SP_Help.getSpFilename());
-            videoPath = file.getPath();
+//            String Lokasi = Link.AppFolder;
+//            File sdcard = getExternalStoragePublicDirectory(Lokasi);
+//            File file = new File(sdcard, SP_Help.getSpFilename());
+//            videoPath = file.getPath();
+            videoPath = "http://fatamorgana-senja.000webhostapp.com/coba/video/Main.mp4";
             Log.e("LOKASI", videoPath);
         }
 
         mVV = (VideoView)findViewById(R.id.myvideoview);
         mVV.setOnCompletionListener(this);
 
+        final SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
+        pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
+        pDialog.setTitleText("Buffering...");
+        pDialog.setCancelable(false);
+        pDialog.show();
+
+        try {
+            // Start the MediaController
+//            MediaController mediacontroller = new MediaController(this);
+//            mediacontroller.setAnchorView(mVV);
+
+            Uri videoUri = Uri.parse(videoPath);
+//            mVV.setMediaController(mediacontroller);
+            mVV.setVideoURI(videoUri);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+//        mVV.requestFocus();
         mVV.setOnPreparedListener( new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mp.setLooping(false);
+//                if (!playFileRes(videoPath)) return;
+                mVV.start();
+//                pDialog.dismiss();
             }
         });
 
@@ -71,10 +99,30 @@ public class FullVideoActivity extends Activity implements MediaPlayer.OnComplet
             }
         });
 
+        final MediaPlayer.OnInfoListener onInfoToPlayStateListener = new MediaPlayer.OnInfoListener() {
 
+            @Override
+            public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                switch (what) {
+                    case MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START: {
+                        pDialog.dismiss();
+                        return true;
+                    }
+                    case MediaPlayer.MEDIA_INFO_BUFFERING_START: {
+                        pDialog.show();
+                        return true;
+                    }
+                    case MediaPlayer.MEDIA_INFO_BUFFERING_END: {
+                        pDialog.show();
+                        return true;
+                    }
+                }
+                return false;
+            }
 
-        if (!playFileRes(videoPath)) return;
-        mVV.start();
+        };
+
+        mVV.setOnInfoListener(onInfoToPlayStateListener);
     }
 
     private boolean playFileRes(String videoPath) {
@@ -91,6 +139,7 @@ public class FullVideoActivity extends Activity implements MediaPlayer.OnComplet
         mVV.stopPlayback();
         this.finish();
     }
+
 
     @Override
     public void onCompletion(MediaPlayer mp) {

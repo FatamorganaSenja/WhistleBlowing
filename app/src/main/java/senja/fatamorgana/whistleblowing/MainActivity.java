@@ -379,10 +379,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     void videoDownload(final String id){
         videoDialog = new SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE);
         videoDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-        videoDialog.setTitleText("\nDownloading\n Video");
+        videoDialog.setTitleText("\nLoading\n Video");
         videoDialog.setCancelable(false);
         videoDialog.show();
-        checkVideo(id);
+//        checkVideo(id);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                urlVideo(id);
+            }
+        }, 3000);
     }
 
     void noConnection(){
@@ -524,6 +531,19 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         Random ran1 = new Random();
         r1 = ran1.nextInt(max - min + 1) + min;
         n1 = Integer.toString(r1);
+    }
+
+    void urlVideo(final String id){
+        SP_Help.saveSPString(SharedPrefManager.SP_QUESTION_TAKE, id);
+        Intent intent = new Intent(MainActivity.this, FullVideoActivity.class);
+        Bundle c = new Bundle();
+
+        c.putString("file", id);
+        intent.putExtras(c);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(intent);
+        overridePendingTransition(R.anim.fade_in_animation, R.anim.fade_out_animation);
     }
 
     void checkVideo(final String id){
